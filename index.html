@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LSTV4705 Student Portal - Life Sciences Teaching 2</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #7c2d12 0%, #ea580c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        #root {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .app-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #9a3412 0%, #ea580c 100%);
+            color: white;
+            padding: 30px 40px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 600px;
+        }
+        
+        .sidebar {
+            background: #fff7ed;
+            border-right: 1px solid #fed7aa;
+            padding: 24px 0;
+        }
+        
+        .nav-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            font-weight: 500;
+            color: #7c2d12;
+        }
+        
+        .nav-item:hover {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+        
+        .nav-item.active {
+            background: #fed7aa;
+            border-left-color: #ea580c;
+            color: #7c2d12;
+        }
+        
+        .content-area {
+            padding: 40px;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #7c2d12;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #ea580c;
+            padding-bottom: 10px;
+        }
+        
+        .card {
+            background: white;
+            border: 1px solid #fed7aa;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .card h3 {
+            color: #9a3412;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+        
+        .card p, .card li {
+            color: #7c2d12;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        
+        .week-card {
+            border-left: 4px solid #f97316;
+            margin-bottom: 16px;
+        }
+        
+        .week-number {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ea580c;
+            margin-bottom: 8px;
+        }
+        
+        .unit-card {
+            border-left: 4px solid #fb923c;
+            background: #fff7ed;
+        }
+        
+        .chat-container {
+            background: #fff7ed;
+            border-radius: 12px;
+            padding: 24px;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .message {
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+        
+        .message.user {
+            background: #f97316;
+            color: white;
+            margin-left: auto;
+        }
+        
+        .message.assistant {
+            background: #ffedd5;
+            color: #7c2d12;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #fed7aa;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .chat-input:focus {
+            border-color: #f97316;
+        }
+        
+        .chat-button {
+            padding: 12px 24px;
+            background: #f97316;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .chat-button:hover {
+            background: #ea580c;
+        }
+        
+        .assessment-card {
+            border-left: 4px solid #f59e0b;
+            background: #fffbeb;
+        }
+        
+        .due-date {
+            color: #dc2626;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .reading-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .reading-item {
+            padding: 12px;
+            background: #fff7ed;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 3px solid #fb923c;
+        }
+        
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .quick-link-card {
+            background: linear-gradient(135deg, #7c2d12 0%, #ea580c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .quick-link-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .faq-item {
+            margin-bottom: 16px;
+        }
+        
+        .faq-question {
+            font-weight: 600;
+            color: #9a3412;
+            cursor: pointer;
+            padding: 12px;
+            background: #ffedd5;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        
+        .faq-answer {
+            padding: 12px;
+            background: #fff7ed;
+            border-radius: 6px;
+            color: #7c2d12;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 24px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #f97316;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 12px;
+            width: 2px;
+            height: 100%;
+            background: #fed7aa;
+        }
+        
+        .timeline-item:last-child::after {
+            display: none;
+        }
+        
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .success-box {
+            background: #ffedd5;
+            border-left: 4px solid #f97316;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState } = React;
+        
+        const courseData = {
+            moduleInfo: {
+                code: "LSTV4705",
+                name: "Life Sciences Teaching 2: Further Education and Training",
+                credits: 16,
+                nqfLevel: 7,
+                department: "Mathematics, Natural Sciences, and Technology Education",
+                lecturers: ["Prof. J.P.H. Pretorius", "Mr. L.N. Mkhwebane"],
+                emails: ["pretoriusjph@ufs.ac.za", "MkhwebaneLN@ufs.ac.za"],
+                phones: ["051 401 3340 (Bloemfontein)", "058 718 5305 (QwaQwa)"],
+                description: "This advanced module equips you with comprehensive Life Sciences content knowledge, understanding of diverse learners, and pedagogical strategies for effective FET Phase teaching."
+            },
+            
+            schedule: [
+                { week: 1, date: "9-13 Feb", unit: "Orientation", activity: "1 class lecture + 1 practical" },
+                { week: 2, date: "16-20 Feb", unit: "Unit 1.1: Learning Life Science with Understanding", activity: "1 class lecture + 1 practical" },
+                { week: 3, date: "23-27 Feb", unit: "Unit 1.2: Assessing Life Science", activity: "1 class lecture + 1 practical" },
+                { week: 4, date: "2-6 Mar", unit: "Unit 1.2: Assessing Life Science (cont.)", activity: "1 class lecture + 1 practical" },
+                { week: 5, date: "9-13 Mar", unit: "Unit 1.3.1: Technology Tools for Inquiry Science", activity: "1 class lecture + 1 practical" },
+                { week: 6, date: "16-19 Mar", unit: "Unit 1.3.2: Introduction to AI in Teaching LS", activity: "1 class lecture + 1 practical" },
+                { week: 7, date: "23-26 Mar", unit: "Unit 1.3.2: AI Tools for LS Classrooms", activity: "1 class lecture + 1 practical" },
+                { week: "TBC", date: "6-9 Apr", unit: "Theory Test 1", activity: "Units 1.1 to 1.3.2", assessment: true },
+                { week: 8, date: "13-17 Apr", unit: "Unit 2.1: Why STEM Should Become STEAM", activity: "1 class lecture + 1 practical" },
+                { week: 9, date: "20-23 Apr", unit: "Unit 2.2: Arts Integration in FET Phase", activity: "1 class lecture + 1 practical" },
+                { week: 10, date: "4-8 May", unit: "Unit 3.1: Laboratory Work in Sciences", activity: "1 class lecture + 1 practical" },
+                { week: 11, date: "11-15 May", unit: "Unit 3.2: Animals in the Laboratory", activity: "1 class lecture + 1 practical" },
+                { week: 12, date: "18-22 May", unit: "Unit 3.3: Co-curricular Activities in LS", activity: "1 class lecture + 1 practical" },
+                { week: "TBC", date: "21 May", unit: "Sit-down Online Practical Test", activity: "Grade 10-11 practicals", assessment: true },
+                { week: "TBC", date: "25-28 May", unit: "Theory Test 2", activity: "Units 2.1-3.3", assessment: true },
+                { week: 13, date: "6-10 Oct", unit: "Unit 3.4: Humour in LS Teaching", activity: "1 online class lecture" },
+                { week: 14, date: "13-17 Oct", unit: "Revision and Concluding Discussion", activity: "1 online class lecture" },
+                { week: "Final", date: "By 2 Oct", unit: "Lesson Evaluation from Teaching Practice", activity: "Submit BB - 100 marks", assessment: true }
+            ],
+            
+            assessments: [
+                {
+                    name: "Practical Workshops & Sit-down Test",
+                    type: "Individual",
+                    description: "Practical workshops online and sit-down test covering Grade 10-11 practicals",
+                    weight: "25%",
+                    marks: 40,
+                    date: "9 Feb 2026 - 21 May 2026",
+                    details: "Continuous practical work throughout semester with final sit-down practical test on 21 May"
+                },
+                {
+                    name: "Theory Test 1",
+                    type: "Individual",
+                    description: "Sit-down theory test covering Learning Units 1.1 to 1.3.2",
+                    weight: "25%",
+                    marks: 40,
+                    date: "6-9 April 2026 (TBC)",
+                    topics: "Learning with understanding, Assessment, Technology tools, AI in teaching"
+                },
+                {
+                    name: "Theory Test 2",
+                    type: "Individual",
+                    description: "Sit-down theory test covering Learning Units 2.1-3.3",
+                    weight: "25%",
+                    marks: 40,
+                    date: "25-28 May 2026 (TBC)",
+                    topics: "STEM to STEAM, Arts integration, Laboratory work, Animals in lab, Co-curricular activities"
+                },
+                {
+                    name: "Lesson Evaluation from Teaching Practice",
+                    type: "Individual",
+                    description: "Lesson evaluation form from teaching practice by a Life Science lecturer, with school stamp",
+                    weight: "25%",
+                    marks: 100,
+                    date: "Submit by 2 October 2026",
+                    details: "Must be evaluated by Life Sciences lecturer and have official school stamp"
+                }
+            ],
+            
+            learningUnits: [
+                {
+                    number: "1.1",
+                    title: "Learning Life Science with Understanding",
+                    topics: [
+                        "Constructivism and prior knowledge",
+                        "Internal and external factors affecting learning",
+                        "Knowledge organization and scaffolding",
+                        "Transfer of learning",
+                        "Naive theories and alternative conceptions",
+                        "Development vs. learning",
+                        "Piaget's cognitive development theory"
+                    ]
+                },
+                {
+                    number: "1.2",
+                    title: "Assessing Life Science",
+                    topics: [
+                        "Assessment strategies in Life Sciences",
+                        "Formative and summative assessment",
+                        "CAPS assessment requirements",
+                        "Effective feedback practices"
+                    ]
+                },
+                {
+                    number: "1.3.1",
+                    title: "Technology Tools and Resources for Inquiry Science",
+                    topics: [
+                        "Digital tools for scientific inquiry",
+                        "Technology integration in Life Sciences",
+                        "Online resources and databases"
+                    ]
+                },
+                {
+                    number: "1.3.2",
+                    title: "Introduction to AI in Teaching Life Sciences",
+                    topics: [
+                        "AI fundamentals for educators",
+                        "AI tools for Life Science classrooms",
+                        "Ethical use of AI in teaching",
+                        "AI-enhanced assessment and feedback"
+                    ]
+                },
+                {
+                    number: "2.1",
+                    title: "Why STEM Should Become STEAM",
+                    topics: [
+                        "Integration of Arts into STEM",
+                        "Benefits of STEAM education",
+                        "Creative approaches to science teaching"
+                    ]
+                },
+                {
+                    number: "2.2",
+                    title: "Implementing Arts Integration in the FET Phase",
+                    topics: [
+                        "Practical arts integration strategies",
+                        "Visual arts in Life Sciences",
+                        "Creative science communication"
+                    ]
+                },
+                {
+                    number: "3.1",
+                    title: "Laboratory Work in the Sciences",
+                    topics: [
+                        "Safe laboratory practices",
+                        "Equipment and techniques",
+                        "CAPS practical requirements",
+                        "Managing lab sessions"
+                    ]
+                },
+                {
+                    number: "3.2",
+                    title: "Animals in the Laboratory",
+                    topics: [
+                        "Ethical considerations",
+                        "Animal welfare guidelines",
+                        "Alternatives to animal use",
+                        "CAPS requirements for dissections"
+                    ]
+                },
+                {
+                    number: "3.3",
+                    title: "Co-curricular Activities in Life Sciences",
+                    topics: [
+                        "Science clubs and societies",
+                        "Field trips and excursions",
+                        "Science fairs and competitions",
+                        "Community engagement"
+                    ]
+                },
+                {
+                    number: "3.4",
+                    title: "Humour in Life Science Teaching",
+                    topics: [
+                        "Role of humour in learning",
+                        "Appropriate use of humour",
+                        "Creating engaging lessons",
+                        "Building rapport with learners"
+                    ]
+                }
+            ],
+            
+            faqs: [
+                {
+                    question: "Is this module examinable?",
+                    answer: "No, this is a non-examinable module. Assessment is continuous throughout the year through 2 theory tests, practical workshops/test, and a teaching practice lesson evaluation. No examination will be written at the end of the year."
+                },
+                {
+                    question: "What happens if I submit late or don't submit?",
+                    answer: "Late submission or non-submission will lead to a 0 being awarded for that assessment activity. Plan ahead and submit on time!"
+                },
+                {
+                    question: "What's the difference between LSTV3605 and LSTV4705?",
+                    answer: "LSTV3605 (20 credits) focuses on foundational Life Sciences teaching including AI integration, microteaching, and curriculum. LSTV4705 (16 credits) is more advanced, covering constructivism, STEAM education, laboratory work, and requires a formal teaching practice evaluation."
+                },
+                {
+                    question: "What is the teaching practice lesson evaluation?",
+                    answer: "Worth 25% (100 marks), this requires you to be evaluated teaching a Life Sciences lesson during teaching practice. The evaluation must be done by a Life Sciences lecturer and the form must have an official school stamp. Submit by 2 October 2026."
+                },
+                {
+                    question: "What are STEAM principles?",
+                    answer: "STEAM adds 'Arts' to STEM (Science, Technology, Engineering, Mathematics). Units 2.1 and 2.2 explore how integrating arts—visual arts, design, creativity—enhances science learning by making it more engaging, accessible, and connected to real-world applications."
+                },
+                {
+                    question: "Do we have to use real animals in practicals?",
+                    answer: "Unit 3.2 covers ethical considerations and animal welfare. CAPS allows certain dissections, but always emphasizes humane treatment, alternatives where possible, and proper ethical protocols. You'll learn when and how to appropriately use animals in teaching."
+                },
+                {
+                    question: "What is constructivism?",
+                    answer: "Constructivism (Unit 1.1) is a learning theory stating that learners actively construct knowledge based on their experiences and prior knowledge. As a teacher, you facilitate this construction through scaffolding, inquiry, and addressing misconceptions, rather than simply transmitting information."
+                },
+                {
+                    question: "How do I prepare for the practical test?",
+                    answer: "The sit-down online practical test (21 May) covers all CAPS Grade 10-11 practicals. Practice these throughout the semester, understand the procedures, know safety protocols, and be able to analyze results. Attend all practical workshops!"
+                }
+            ]
+        };
+        
+        function App() {
+            const [activeSection, setActiveSection] = useState('overview');
+            const [chatMessages, setChatMessages] = useState([
+                {
+                    type: 'assistant',
+                    text: "👋 Hello! I'm your LSTV4705 AI tutor. Ask me about constructivism, STEAM education, laboratory work, teaching practice, assessments, or any module content!"
+                }
+            ]);
+            const [inputMessage, setInputMessage] = useState('');
+            
+            const handleSendMessage = () => {
+                if (!inputMessage.trim()) return;
+                
+                const newMessages = [...chatMessages, { type: 'user', text: inputMessage }];
+                setChatMessages(newMessages);
+                
+                setTimeout(() => {
+                    const response = generateResponse(inputMessage.toLowerCase());
+                    setChatMessages([...newMessages, { type: 'assistant', text: response }]);
+                }, 500);
+                
+                setInputMessage('');
+            };
+            
+            const generateResponse = (query) => {
+                if (query.includes('construct') || query.includes('piaget') || query.includes('learn')) {
+                    return `🧠 **Constructivism & Learning (Unit 1.1):**\n\n**Key Principles:**\n- Learners actively construct knowledge from experiences\n- Prior knowledge shapes new learning\n- Understanding > memorization\n\n**Important Concepts:**\n📚 **Transfer:** Applying knowledge to new situations\n🤔 **Naive Theories:** Intuitive (often incorrect) explanations learners develop\n🔄 **Conceptual Change:** Replacing misconceptions with scientific understanding\n\n**Piaget's Stages:**\n- Concrete operational → abstract reasoning\n- Development influences what can be learned\n- Active engagement essential\n\n**Teaching Strategies:**\n✓ Scaffold learning\n✓ Build on prior knowledge\n✓ Create cognitive conflict (inquiry)\n✓ Foster learning communities\n\nThis is foundation for effective teaching!`;
+                }
+                
+                if (query.includes('steam') || query.includes('art')) {
+                    return `🎨 **STEAM Education (Units 2.1 & 2.2):**\n\n**Why STEAM?**\nAdding Arts to STEM makes science:\n- More engaging and creative\n- Accessible to diverse learners\n- Connected to real-world applications\n- Develops visual-spatial thinking\n\n**Arts Integration Examples:**\n🎭 Drama: Acting out biological processes\n🎨 Visual Arts: Scientific illustrations, infographics\n🎵 Music: Patterns in nature, rhythms in physiology\n📐 Design: Modeling ecosystems, cell structures\n\n**Benefits:**\n✓ Multiple entry points for learning\n✓ Enhances creativity and innovation\n✓ Improves communication skills\n✓ Makes science more memorable\n\n**Covered:** Weeks 8-9 (13-23 April)`;
+                }
+                
+                if (query.includes('lab') || query.includes('practical') || query.includes('experiment')) {
+                    return `🔬 **Laboratory Work (Units 3.1 & 3.2):**\n\n**Unit 3.1: Lab Basics**\n- Safety protocols and procedures\n- Equipment and techniques\n- CAPS practical requirements\n- Managing effective lab sessions\n\n**Unit 3.2: Animals in Labs**\n⚠️ **Ethical Principles:**\n- Minimize harm and distress\n- Use alternatives when possible\n- Follow CAPS guidelines strictly\n- Obtain proper permissions\n- Humane treatment always\n\n**Practical Assessment:**\n📝 Sit-down online practical test: 21 May (TBC)\n- 40 marks (25% of module)\n- All Grade 10-11 CAPS practicals\n- Know procedures, safety, analysis\n\n**Tip:** Practice CAPS practicals throughout semester!`;
+                }
+                
+                if (query.includes('teach') && (query.includes('practice') || query.includes('evaluation'))) {
+                    return `👩‍🏫 **Teaching Practice Evaluation:**\n\n**Worth 25% (100 marks!)**\n\n**Requirements:**\n✓ Teach a Life Sciences lesson during teaching practice\n✓ Be evaluated by a Life Sciences lecturer\n✓ Evaluation form must have official school stamp\n✓ Submit to Blackboard by **2 October 2026**\n\n**What's Evaluated:**\n- Lesson planning and preparation\n- Content knowledge\n- Teaching strategies\n- Learner engagement\n- Assessment methods\n- Classroom management\n- Professional conduct\n\n**Critical:** This is NOT optional - it's 25% of your module mark. Plan ahead and schedule your evaluation during teaching practice period!`;
+                }
+                
+                if (query.includes('assess') || query.includes('test')) {
+                    return `📝 **Assessment Structure:**\n\n**Theory Test 1 (25%)** - 40 marks\n- Date: 6-9 April (TBC)\n- Units 1.1-1.3.2\n- Topics: Learning, Assessment, Technology, AI\n\n**Theory Test 2 (25%)** - 40 marks\n- Date: 25-28 May (TBC)\n- Units 2.1-3.3\n- Topics: STEAM, Lab work, Co-curricular\n\n**Practical (25%)** - 40 marks\n- Continuous workshops + sit-down test (21 May)\n- All Grade 10-11 CAPS practicals\n\n**Teaching Practice (25%)** - 100 marks\n- Lesson evaluation by LS lecturer\n- Due: 2 October 2026\n\n⚠️ Late submission = 0 marks\n⚠️ No final exam - continuous assessment only`;
+                }
+                
+                if (query.includes('ai') || query.includes('artificial') || query.includes('technology')) {
+                    return `🤖 **AI & Technology (Units 1.3.1 & 1.3.2):**\n\n**Unit 1.3.1: Technology Tools**\n- Digital tools for inquiry science\n- Online databases and resources\n- Technology integration strategies\n\n**Unit 1.3.2: AI in Teaching LS**\n- Fundamentals of AI for educators\n- AI tools for Life Science classrooms\n- ChatGPT, Claude, simulations\n- Ethical considerations\n- AI-enhanced assessment\n\n**Key Points:**\n✓ AI enhances—doesn't replace—teaching\n✓ Verify AI outputs always\n✓ Maintain academic integrity\n✓ Use for differentiation and scaffolding\n✓ POPIA compliance (privacy)\n\n**Covered:** Weeks 5-7 (9 Mar - 26 Mar)`;
+                }
+                
+                if (query.includes('co-curr') || query.includes('club') || query.includes('field')) {
+                    return `🌟 **Co-curricular Activities (Unit 3.3):**\n\nExtending learning beyond the classroom!\n\n**Types of Activities:**\n🔬 **Science Clubs:** Regular meetings, experiments, discussions\n🏆 **Competitions:** Science fairs, Olympiads, ESKOM Expo\n🌳 **Field Trips:** Nature reserves, museums, universities\n🎪 **Events:** Science weeks, Open Days, exhibitions\n🤝 **Community:** Environmental projects, health awareness\n\n**Benefits:**\n✓ Develops passion for science\n✓ Practical application of concepts\n✓ Leadership and teamwork skills\n✓ Career exploration\n✓ Enriches school science culture\n\n**Your Role:** Learn how to plan, organize, and facilitate these enriching experiences!\n\n**Covered:** Week 12 (18-22 May)`;
+                }
+                
+                if (query.includes('humour') || query.includes('funny')) {
+                    return `😄 **Humour in Life Science Teaching (Unit 3.4):**\n\n**Why Use Humour?**\n- Reduces anxiety and stress\n- Increases engagement and attention\n- Makes content memorable\n- Builds positive teacher-learner relationships\n- Creates safe learning environment\n\n**Appropriate Use:**\n✓ Self-deprecating (not at learners' expense)\n✓ Relevant to content\n✓ Age-appropriate\n✓ Culturally sensitive\n✓ Spontaneous and natural\n\n**Examples in Life Sciences:**\n- Puns and wordplay (mitosis jokes!)\n- Funny analogies\n- Humorous examples\n- Cartoons and memes\n- Stories and anecdotes\n\n**Remember:** Humour should enhance learning, not distract from it!\n\n**Covered:** Week 13 (6-10 October) - Online`;
+                }
+                
+                if (query.includes('contact') || query.includes('lecturer') || query.includes('email')) {
+                    return `📧 **Contact Information:**\n\n**Bloemfontein Campus:**\nProf. J.P.H. Pretorius\npretoriusjph@ufs.ac.za\n051 401 3340\n\n**QwaQwa Campus:**\nMr. L.N. Mkhwebane\nMkhwebaneLN@ufs.ac.za\n058 718 5305\n\n**For all sections:** Contact either lecturer\n**Consultation:** By appointment\n\nCheck Blackboard regularly for announcements and materials!`;
+                }
+                
+                if (query.includes('schedule') || query.includes('week') || query.includes('when')) {
+                    return `📅 **Module Schedule Overview:**\n\n**First Semester (Feb-May):**\n- Weeks 1-7: Unit 1 (Learning, Assessment, AI, Technology)\n- Test 1: 6-9 April\n- Weeks 8-12: Units 2-3 (STEAM, Lab work, Co-curricular)\n- Practical Test: 21 May\n- Test 2: 25-28 May\n\n**Second Semester (Oct):**\n- Weeks 13-14: Unit 3.4 (Humour) + Revision\n- Online lectures\n\n**Teaching Practice:**\n- Lesson evaluation due: 2 October\n\nCheck Schedule tab for complete breakdown!`;
+                }
+                
+                return `I can help you with:\n\n🧠 Constructivism & learning theories\n🎨 STEAM education\n🔬 Laboratory work & ethics\n👩‍🏫 Teaching practice evaluation\n📝 Assessments and tests\n🤖 AI and technology in teaching\n🌟 Co-curricular activities\n😄 Humour in teaching\n📅 Schedule and dates\n📧 Contact information\n\nWhat would you like to know?`;
+            };
+            
+            const renderContent = () => {
+                switch(activeSection) {
+                    case 'overview':
+                        return <OverviewSection />;
+                    case 'schedule':
+                        return <ScheduleSection />;
+                    case 'assessments':
+                        return <AssessmentsSection />;
+                    case 'learning-units':
+                        return <LearningUnitsSection />;
+                    case 'resources':
+                        return <ResourcesSection />;
+                    case 'faq':
+                        return <FAQSection />;
+                    case 'ai-tutor':
+                        return (
+                            <div className="chat-container">
+                                <h2 className="section-title">🤖 AI Tutor</h2>
+                                <div className="chat-messages">
+                                    {chatMessages.map((msg, idx) => (
+                                        <div key={idx} className={`message ${msg.type}`}>
+                                            {msg.text}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="chat-input-container">
+                                    <input 
+                                        type="text" 
+                                        className="chat-input"
+                                        placeholder="Ask me anything about LSTV4705..."
+                                        value={inputMessage}
+                                        onChange={(e) => setInputMessage(e.target.value)}
+                                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                                    />
+                                    <button className="chat-button" onClick={handleSendMessage}>
+                                        Send
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    default:
+                        return <OverviewSection />;
+                }
+            };
+            
+            return (
+                <div className="app-container">
+                    <div className="header">
+                        <h1>{courseData.moduleInfo.code}: {courseData.moduleInfo.name}</h1>
+                        <p>{courseData.moduleInfo.credits} Credits | NQF Level {courseData.moduleInfo.nqfLevel} | {courseData.moduleInfo.department}</p>
+                    </div>
+                    
+                    <div className="main-content">
+                        <div className="sidebar">
+                            <div className={`nav-item ${activeSection === 'overview' ? 'active' : ''}`} onClick={() => setActiveSection('overview')}>
+                                📊 Overview
+                            </div>
+                            <div className={`nav-item ${activeSection === 'schedule' ? 'active' : ''}`} onClick={() => setActiveSection('schedule')}>
+                                📅 Schedule
+                            </div>
+                            <div className={`nav-item ${activeSection === 'assessments' ? 'active' : ''}`} onClick={() => setActiveSection('assessments')}>
+                                📝 Assessments
+                            </div>
+                            <div className={`nav-item ${activeSection === 'learning-units' ? 'active' : ''}`} onClick={() => setActiveSection('learning-units')}>
+                                📚 Learning Units
+                            </div>
+                            <div className={`nav-item ${activeSection === 'resources' ? 'active' : ''}`} onClick={() => setActiveSection('resources')}>
+                                📑 Resources
+                            </div>
+                            <div className={`nav-item ${activeSection === 'faq' ? 'active' : ''}`} onClick={() => setActiveSection('faq')}>
+                                ❓ FAQ
+                            </div>
+                            <div className={`nav-item ${activeSection === 'ai-tutor' ? 'active' : ''}`} onClick={() => setActiveSection('ai-tutor')}>
+                                🤖 AI Tutor
+                            </div>
+                        </div>
+                        
+                        <div className="content-area">
+                            {renderContent()}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        
+        function OverviewSection() {
+            return (
+                <div>
+                    <h2 className="section-title">Module Overview</h2>
+                    
+                    <div className="card">
+                        <h3>📚 Welcome to LSTV4705!</h3>
+                        <p>{courseData.moduleInfo.description}</p>
+                        <p style={{marginTop: '12px'}}><strong>This advanced module builds on LSTV3605</strong>, taking your Life Sciences teaching skills to the next level with deeper exploration of learning theory, creative teaching methods, and professional practice.</p>
+                    </div>
+                    
+                    <div className="card">
+                        <h3>👨‍🏫 Lecturer Information</h3>
+                        <p><strong>Bloemfontein Campus:</strong> {courseData.moduleInfo.lecturers[0]}</p>
+                        <p>Email: {courseData.moduleInfo.emails[0]}</p>
+                        <p>Phone: {courseData.moduleInfo.phones[0]}</p>
+                        <br/>
+                        <p><strong>QwaQwa Campus:</strong> {courseData.moduleInfo.lecturers[1]}</p>
+                        <p>Email: {courseData.moduleInfo.emails[1]}</p>
+                        <p>Phone: {courseData.moduleInfo.phones[1]}</p>
+                    </div>
+                    
+                    <div className="card">
+                        <h3>🎯 Module Outcomes</h3>
+                        <p><strong>a) Enhanced Life Sciences Presentation:</strong> Effectively present content aligned with CAPS for FET phase</p>
+                        <p><strong>b) Effective Teaching Skills:</strong> Create and maintain engaging, productive learning environments</p>
+                        <p><strong>c) Knowledge Strand Integration:</strong> Integrate CAPS strands into teaching practices</p>
+                        <p><strong>d) Learner Engagement:</strong> Foster greater engagement and learning outcomes</p>
+                    </div>
+                    
+                    <div className="warning-box">
+                        <h3>⚠️ Critical Policies</h3>
+                        <ul style={{marginLeft: '20px'}}>
+                            <li><strong>No final exam</strong> - continuous assessment only</li>
+                            <li><strong>Late submission = 0</strong> - no exceptions</li>
+                            <li>Teaching Practice evaluation is COMPULSORY (25%)</li>
+                            <li>Weekly contact sessions (blend of f2f and online)</li>
+                            <li>Full participation in lectures and tutorials required</li>
+                        </ul>
+                    </div>
+                    
+                    <div className="success-box">
+                        <h3>✨ What Makes This Module Special</h3>
+                        <ul style={{marginLeft: '20px'}}>
+                            <li><strong>Constructivism Deep Dive:</strong> Piaget, scaffolding, conceptual change</li>
+                            <li><strong>STEAM Education:</strong> Integrating arts into science teaching</li>
+                            <li><strong>Laboratory Expertise:</strong> Safety, ethics, and effective practicals</li>
+                            <li><strong>Teaching Practice Integration:</strong> Real classroom evaluation</li>
+                            <li><strong>Creative Pedagogy:</strong> Humour, co-curricular activities</li>
+                        </ul>
+                    </div>
+                    
+                    <div className="quick-links">
+                        <div className="quick-link-card" onClick={() => window.open('https://www.ufs.ac.za', '_blank')}>
+                            <h3>🌐 UFS Website</h3>
+                            <p>University Resources</p>
+                        </div>
+                        <div className="quick-link-card" onClick={() => alert('Access Blackboard through your UFS portal')}>
+                            <h3>📱 Blackboard</h3>
+                            <p>Course Materials</p>
+                        </div>
+                        <div className="quick-link-card" onClick={() => alert('Email lecturers for appointments')}>
+                            <h3>📧 Contact</h3>
+                            <p>Book Consultation</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        
+        function ScheduleSection() {
+            return (
+                <div>
+                    <h2 className="section-title">📅 Module Schedule 2026</h2>
+                    
+                    <div className="timeline">
+                        {courseData.schedule.map((item, idx) => (
+                            <div key={idx} className="timeline-item">
+                                <div className={`card week-card ${item.assessment ? 'assessment-card' : ''}`}>
+                                    <div className="week-number">Week {item.week} - {item.date}</div>
+                                    <h3>{item.unit}</h3>
+                                    <p>{item.activity}</p>
+                                    {item.assessment && <p className="due-date">📌 ASSESSMENT</p>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    
+                    <div className="card" style={{marginTop: '24px', background: '#fef3c7'}}>
+                        <h3>🗓️ Key Dates Summary</h3>
+                        <p><strong>Theory Test 1:</strong> 6-9 April (TBC)</p>
+                        <p><strong>Practical Test:</strong> 21 May (TBC)</p>
+                        <p><strong>Theory Test 2:</strong> 25-28 May (TBC)</p>
+                        <p><strong>Teaching Practice Evaluation Due:</strong> 2 October</p>
+                        <p style={{marginTop: '12px', color: '#dc2626', fontWeight: 'bold'}}>⚠️ Teaching Practice evaluation is 25% of your mark - don't miss it!</p>
+                    </div>
+                </div>
+            );
+        }
+        
+        function AssessmentsSection() {
+            return (
+                <div>
+                    <h2 className="section-title">📝 Assessments</h2>
+                    
+                    <div className="warning-box">
+                        <h3>⚠️ Critical Information</h3>
+                        <p><strong>This is a NON-EXAMINABLE module.</strong> Assessment is continuous. No final examination.</p>
+                        <p><strong>Late submission or non-submission = 0 marks.</strong></p>
+                    </div>
+                    
+                    {courseData.assessments.map((assessment, idx) => (
+                        <div key={idx} className="card assessment-card">
+                            <h3>{assessment.name} ({assessment.type})</h3>
+                            <p><strong>Weight:</strong> {assessment.weight} ({assessment.marks} marks)</p>
+                            <p><strong>Date:</strong> <span className="due-date">{assessment.date}</span></p>
+                            {assessment.topics && <p><strong>Topics:</strong> {assessment.topics}</p>}
+                            <p><strong>Description:</strong> {assessment.description}</p>
+                            {assessment.details && (
+                                <p style={{marginTop: '8px', fontStyle: 'italic', color: '#7c2d12'}}>{assessment.details}</p>
+                            )}
+                        </div>
+                    ))}
+                    
+                    <div className="card">
+                        <h3>📊 Final Mark Calculation</h3>
+                        <p>Practical Workshops & Test: 25% (40 marks)</p>
+                        <p>Theory Test 1: 25% (40 marks)</p>
+                        <p>Theory Test 2: 25% (40 marks)</p>
+                        <p>Teaching Practice Evaluation: 25% (100 marks)</p>
+                        <p style={{marginTop: '12px', fontWeight: 'bold', color: '#9a3412'}}>Total: 100%</p>
+                    </div>
+                    
+                    <div className="success-box">
+                        <h3>✅ Success Tips</h3>
+                        <ul style={{marginLeft: '20px'}}>
+                            <li>Attend all lectures and practicals</li>
+                            <li>Master CAPS Grade 10-11 practicals early</li>
+                            <li>Schedule teaching practice evaluation in advance</li>
+                            <li>Form study groups for theory content</li>
+                            <li>Understand constructivism deeply (Unit 1.1)</li>
+                            <li>Practice STEAM integration ideas</li>
+                        </ul>
+                    </div>
+                </div>
+            );
+        }
+        
+        function LearningUnitsSection() {
+            return (
+                <div>
+                    <h2 className="section-title">📚 Learning Units</h2>
+                    
+                    <div className="card">
+                        <h3>🗂️ Module Structure</h3>
+                        <p><strong>Unit 1:</strong> Introduction - Learning, Assessment, Technology & AI</p>
+                        <p><strong>Unit 2:</strong> STEAM Education - Arts Integration</p>
+                        <p><strong>Unit 3:</strong> Practical Teaching - Labs, Ethics, Co-curricular, Humour</p>
+                    </div>
+                    
+                    {courseData.learningUnits.map((unit, idx) => (
+                        <div key={idx} className="card unit-card">
+                            <h3>Unit {unit.number}: {unit.title}</h3>
+                            <div style={{marginTop: '12px'}}>
+                                <strong>Topics Covered:</strong>
+                                <ul style={{marginLeft: '20px', marginTop: '8px'}}>
+                                    {unit.topics.map((topic, tidx) => (
+                                        <li key={tidx}>{topic}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    ))}
+                    
+                    <div className="success-box" style={{marginTop: '20px'}}>
+                        <h3>💡 Study Strategy</h3>
+                        <p><strong>Formulate Secondary Outcomes:</strong> For each unit, you and your peers should collectively formulate relevant secondary outcomes. This develops your ability to think as an educator!</p>
+                        <p style={{marginTop: '12px'}}><strong>Integration is Key:</strong> Connect learning theory (Unit 1.1) with practical application (Units 3.1-3.4). Theory informs practice!</p>
+                    </div>
+                </div>
+            );
+        }
+        
+        function ResourcesSection() {
+            return (
+                <div>
+                    <h2 className="section-title">📑 Resources & Support</h2>
+                    
+                    <div className="card">
+                        <h3>📚 Essential Materials</h3>
+                        <ul style={{marginLeft: '20px'}}>
+                            <li>Module Guide 2026 - On Blackboard</li>
+                            <li>CAPS Life Sciences (Grades 10-12)</li>
+                            <li>Unit notes for each learning unit</li>
+                            <li>Practical workshop resources</li>
+                            <li>Lecture slides (posted weekly)</li>
+                            <li>Lesson plan templates</li>
+                            <li>Teaching practice evaluation forms</li>
+                        </ul>
+                    </div>
+                    
+                    <div className="card">
+                        <h3>🔬 Key Topics to Master</h3>
+                        <p><strong>Constructivism (Unit 1.1):</strong> Foundation for everything - understand deeply!</p>
+                        <p><strong>Scaffolding:</strong> How to support learners appropriately</p>
+                        <p><strong>Conceptual Change:</strong> Addressing misconceptions effectively</p>
+                        <p><strong>STEAM:</strong> Creative integration of arts into science</p>
+                        <p><strong>Lab Ethics:</strong> Especially regarding animals</p>
+                        <p><strong>CAPS Practicals:</strong> All Grade 10-11 procedures</p>
+                    </div>
+                    
+                    <div className="card">
+                        <h3>🆘 Support Available</h3>
+                        <ul style={{marginLeft: '20px'}}>
+                            <li><strong>Peer Study Groups:</strong> Collaborative learning</li>
+                            <li><strong>Blackboard:</strong> All materials and announcements</li>
+                            <li><strong>Library:</strong> Research databases</li>
+                            <li><strong>Teaching Practice Office:</strong> Practical placements</li>
+                            <li><strong>Lecturer Feedback:</strong> Regular tutorial sessions</li>
+                            <li><strong>AI Tutor:</strong> 24/7 support through this portal</li>
+                        </ul>
+                    </div>
+                    
+                    <div className="success-box">
+                        <h3>💡 Study Tips</h3>
+                        <ul style={{marginLeft: '20px'}}>
+                            <li>Read unit notes BEFORE class</li>
+                            <li>Engage actively in tutorials</li>
+                            <li>Practice CAPS practicals hands-on</li>
+                            <li>Think deeply about learning theory</li>
+                            <li>Plan teaching practice evaluation early</li>
+                            <li>Keep a teaching journal for reflection</li>
+                        </ul>
+                    </div>
+                </div>
+            );
+        }
+        
+        function FAQSection() {
+            const [openFAQ, setOpenFAQ] = useState(null);
+            
+            return (
+                <div>
+                    <h2 className="section-title">❓ Frequently Asked Questions</h2>
+                    
+                    {courseData.faqs.map((faq, idx) => (
+                        <div key={idx} className="faq-item">
+                            <div 
+                                className="faq-question" 
+                                onClick={() => setOpenFAQ(openFAQ === idx ? null : idx)}
+                            >
+                                {faq.question} {openFAQ === idx ? '▼' : '▶'}
+                            </div>
+                            {openFAQ === idx && (
+                                <div className="faq-answer">{faq.answer}</div>
+                            )}
+                        </div>
+                    ))}
+                    
+                    <div className="success-box" style={{marginTop: '24px'}}>
+                        <h3>💬 Still Have Questions?</h3>
+                        <p>Try the AI Tutor for instant answers, or contact your lecturer:</p>
+                        <p><strong>Bloemfontein:</strong> Prof. J.P.H. Pretorius (pretoriusjph@ufs.ac.za)</p>
+                        <p><strong>QwaQwa:</strong> Mr. L.N. Mkhwebane (MkhwebaneLN@ufs.ac.za)</p>
+                    </div>
+                </div>
+            );
+        }
+        
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
